@@ -1,0 +1,96 @@
+the structure of the code is similar to that of phase_3 so here also the input consist of two integers
+
+I gave the initial input as 1 12
+
+
+Dump of assembler code for function phase_4:
+=> 0x0000000000400ffa <+0>:	sub    $0x18,%rsp
+   0x0000000000400ffe <+4>:	mov    %fs:0x28,%rax
+   0x0000000000401007 <+13>:	mov    %rax,0x8(%rsp)
+   0x000000000040100c <+18>:	xor    %eax,%eax
+   0x000000000040100e <+20>:	lea    0x4(%rsp),%rcx
+   0x0000000000401013 <+25>:	mov    %rsp,%rdx
+   0x0000000000401016 <+28>:	mov    $0x4025af,%esi //input format is %d %d
+   0x000000000040101b <+33>:	callq  0x400bb0 <__isoc99_sscanf@plt>
+   0x0000000000401020 <+38>:	cmp    $0x2,%eax        // checks if the input is two integers or not
+   0x0000000000401023 <+41>:	jne    0x40102b <phase_4+49>  // else it will jump to <phase_4+49> where the bomb will explode
+   0x0000000000401025 <+43>:	cmpl   $0xe,(%rsp)  // since the value of $0xe is 14, this checks if the input is in range of 14 or not 
+   0x0000000000401029 <+47>:	jbe    0x401030 <phase_4+54>  // if first initial input is < 14 than go to line <+54> else the bomb will explode.
+   0x000000000040102b <+49>:	callq  0x40142a <explode_bomb>
+   0x0000000000401030 <+54>:	mov    $0xe,%edx // move 14 to %edx
+   0x0000000000401035 <+59>:	mov    $0x0,%esi  // move 0 to %esi
+   0x000000000040103a <+64>:	mov    (%rsp),%edi // here the %edi becomes first inital input
+   0x000000000040103d <+67>:	callq  0x400fbc <func4>   // calls the function4
+   0x0000000000401042 <+72>:	cmp    $0x2,%eax  // checks if %eax= 2. if equal than move to line <+77> else the bomb will be exploded.
+   0x0000000000401045 <+75>:	jne    0x40104e <phase_4+84>
+   0x0000000000401047 <+77>:	cmpl   $0x2,0x4(%rsp)  //compares the second input with 2. If equal than move to line <+89> else it will explode the bomb. 
+   0x000000000040104c <+82>:	je     0x401053 <phase_4+89>
+   0x000000000040104e <+84>:	callq  0x40142a <explode_bomb>
+--Type <RET> for more, q to quit, c to continue without paging--
+   0x0000000000401053 <+89>:	mov    0x8(%rsp),%rax
+   0x0000000000401058 <+94>:	xor    %fs:0x28,%rax
+   0x0000000000401061 <+103>:	je     0x401068 <phase_4+110>
+   0x0000000000401063 <+105>:	callq  0x400b00 <__stack_chk_fail@plt>
+   0x0000000000401068 <+110>:	add    $0x18,%rsp
+   0x000000000040106c <+114>:	retq   
+End of assembler dump.
+
+
+(gdb) x/d $rsp
+0x7fffffffdd60:	1
+(gdb) x/d $rsp+4
+0x7fffffffdd64:	12
+
+
+We can see that $rsp holds our two given inputs. From the above assembly code we know that the first input should lie between 2 to 14.
+Now in line <+67> it calls the function4 so lets see the inside of the function 4
+
+
+
+Dump of assembler code for function func4:
+=> 0x0000000000400fbc <+0>:	sub    $0x8,%rsp
+   0x0000000000400fc0 <+4>:	mov    %edx,%eax    // since edx=14, eax will also be equal to 14
+   0x0000000000400fc2 <+6>:	sub    %esi,%eax    // eax=eax-esi that means 14-0=14
+   0x0000000000400fc4 <+8>:	mov    %eax,%ecx    // here eax=14 so will be ecx=14
+   0x0000000000400fc6 <+10>:	shr    $0x1f,%ecx   // since 0x1f=31, ecx >> 31  which returns the MSB
+   0x0000000000400fc9 <+13>:	add    %ecx,%eax    //eax=eax+ecx which will be eax= 14+0 = 14
+   0x0000000000400fcb <+15>:	sar    %eax  // here eax=eax>>1 which is 14>>1
+   0x0000000000400fcd <+17>:	lea    (%rax,%rsi,1),%ecx // here ecx=eax+rsi so ecx=7
+   0x0000000000400fd0 <+20>:	cmp    %edi,%ecx     // now  it compares our first input with ecx
+   0x0000000000400fd2 <+22>:	jle    0x400fe0 <func4+36> // here if 7<= out first input, than jump to recursion
+   0x0000000000400fd4 <+24>:	lea    -0x1(%rcx),%edx   // here edx= rcx-1
+   0x0000000000400fd7 <+27>:	callq  0x400fbc <func4>  // back to func4
+   0x0000000000400fdc <+32>:	add    %eax,%eax   // here eax=eax+eax
+   
+   0x0000000000400fde <+34>:	jmp    0x400ff5 <func4+57> 
+   0x0000000000400fe0 <+36>:	mov    $0x0,%eax  // move 0 to eax so eax=0
+   0x0000000000400fe5 <+41>:	cmp    %edi,%ecx // since ecx=7 so it again compares ecx with the first input
+   0x0000000000400fe7 <+43>:	jge    0x400ff5 <func4+57> // here eax>=edi  which means 7>= first input
+   0x0000000000400fe9 <+45>:	lea    0x1(%rcx),%esi // here esi= 1 + rcx which means esi = 1 + 7 = 8
+   0x0000000000400fec <+48>:	callq  0x400fbc <func4> // back to func4
+   0x0000000000400ff1 <+53>:	lea    0x1(%rax,%rax,1),%eax
+   0x0000000000400ff5 <+57>:	add    $0x8,%rsp //return back the eax
+   0x0000000000400ff9 <+61>:	retq   
+--Type <RET> for more, q to quit, c to continue without paging--
+End of assembler dump.
+
+
+
+Conclusion:
+
+First of all we got the hint that there should be two inputs for the phase 4. After that we got that the first input should be between 2 to 14. 
+The entire concept of the phase_4 is about the understanding of recursion. Inside function 4 there is a base case and recursion. We also got that out last inputs need to be 2 inorder not to explode the bomb.
+Given the conditions i have tried all the numbers between 2 to 14 as first input and i know that the second input is 2. so after checking all the numbers from 2 to 14 i got 4 as the correct digit for first input.
+
+So finally the correct inputs are "4 2"
+
+
+
+
+
+
+
+
+
+
+

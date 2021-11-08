@@ -1,0 +1,47 @@
+Dump of assembler code for function phase_5:
+=> 0x000000000040106d <+0>:	sub    $0x18,%rsp
+   0x0000000000401071 <+4>:	mov    %fs:0x28,%rax
+   0x000000000040107a <+13>:	mov    %rax,0x8(%rsp)
+   0x000000000040107f <+18>:	xor    %eax,%eax
+   0x0000000000401081 <+20>:	lea    0x4(%rsp),%rcx
+   0x0000000000401086 <+25>:	mov    %rsp,%rdx
+   0x0000000000401089 <+28>:	mov    $0x4025af,%esi  // esi contains two integer inputs: %d %d 
+   0x000000000040108e <+33>:	callq  0x400bb0 <__isoc99_sscanf@plt>
+   0x0000000000401093 <+38>:	cmp    $0x1,%eax  // checks whether the given input length is greater than 1 or not. if greater than jump to <phase_5+48> else the bomb will be exploded.
+   0x0000000000401096 <+41>:	jg     0x40109d <phase_5+48>
+   0x0000000000401098 <+43>:	callq  0x40142a <explode_bomb>
+   0x000000000040109d <+48>:	mov    (%rsp),%eax   // eax= first input
+   0x00000000004010a0 <+51>:	and    $0xf,%eax
+   0x00000000004010a3 <+54>:	mov    %eax,(%rsp)
+   0x00000000004010a6 <+57>:	cmp    $0xf,%eax  //checks if the  first given input is in range 0-14
+   0x00000000004010a9 <+60>:	je     0x4010da <phase_5+109>
+   0x00000000004010ab <+62>:	mov    $0x0,%ecx //move 0 to ecx
+   0x00000000004010b0 <+67>:	mov    $0x0,%edx // move 0 to edx
+   0x00000000004010b5 <+72>:	add    $0x1,%edx  // increment edx by 1
+   0x00000000004010b8 <+75>:	cltq   
+   0x00000000004010ba <+77>:	mov    0x402460(,%rax,4),%eax // element stored in address (0x402460+rax*4) to eax
+   0x00000000004010c1 <+84>:	add    %eax,%ecx  // add all the array elements
+   0x00000000004010c3 <+86>:	cmp    $0xf,%eax  // check if eax=15, if equal we can go out from the loop
+   0x00000000004010c6 <+89>:	jne    0x4010b5 <phase_5+72> // else we have to iterate again  from line <+72>
+   0x00000000004010c8 <+91>:	movl   $0xf,(%rsp)
+   0x00000000004010cf <+98>:	cmp    $0xf,%edx // checks if there was 15 iteration or not. if not bomb will be exploded
+   0x00000000004010d2 <+101>:	jne    0x4010da <phase_5+109>
+   0x00000000004010d4 <+103>:	cmp    0x4(%rsp),%ecx  // checks if second input = sum of elements of array. if equal than go to line <phase_5+114>. else the bomb will be exploded
+   0x00000000004010d8 <+107>:	je     0x4010df <phase_5+114>
+   0x00000000004010da <+109>:	callq  0x40142a <explode_bomb>
+   0x00000000004010df <+114>:	mov    0x8(%rsp),%rax
+   0x00000000004010e4 <+119>:	xor    %fs:0x28,%rax
+   0x00000000004010ed <+128>:	je     0x4010f4 <phase_5+135>
+   0x00000000004010ef <+130>:	callq  0x400b00 <__stack_chk_fail@plt>
+   0x00000000004010f4 <+135>:	add    $0x18,%rsp
+   0x00000000004010f8 <+139>:	retq   
+End of assembler dump.
+
+The first input shoud be such that it ought to be the index of the array where the component in that list of array acts index to another element within the array and like this it will point to all the component within the array but the input that client have given within the circle until the pointed component is 15 at the same time whereas it is iteraing it will entirety all the pointed components which should be rises  to the second user input. So the arrangement is 5 115.
+
+
+
+
+
+
+
